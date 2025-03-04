@@ -1,2 +1,1 @@
-# BakedPixelCodingChallenge
-Baked Pixel Coding Challenge
+# Baked Pixel Coding Challenge
