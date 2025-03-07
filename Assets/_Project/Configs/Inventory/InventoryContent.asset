@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7941cfddd5f2e82488c621a648211909, type: 3}
+  m_Name: InventoryContent
+  m_EditorClassIdentifier: 
+  <Content>k__BackingField:
+  - Item: {fileID: 11400000, guid: 1342c89b5ed9d4e449c1b787a19bc9f0, type: 2}
+    Count: 1
+  - Item: {fileID: 11400000, guid: 6a6c83d727421c34b8b97b2d06ad5b07, type: 2}
+    Count: 1
+  - Item: {fileID: 11400000, guid: 226bd33bb22710e44bc60e76b4ff9650, type: 2}
+    Count: 1
+  - Item: {fileID: 11400000, guid: 8262dc499aef84c4b9891bfcf5999c41, type: 2}
+    Count: 1
+  - Item: {fileID: 11400000, guid: 36075a64cb9403341a0b39bce6c6604a, type: 2}
+    Count: 1
+  - Item: {fileID: 11400000, guid: beb24d016515b1940b0ef0d503074353, type: 2}
+    Count: 1
+  - Item: {fileID: 11400000, guid: 2b2afe10a167c84468d5848bd30160d3, type: 2}
+    Count: 1
+  - Item: {fileID: 11400000, guid: cd82a416029ca0a4abe5d51ff32f9e3a, type: 2}
+    Count: 1

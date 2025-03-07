@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27c8dc7e991fde94382f2172b1a79b57, type: 3}
+  m_Name: Cap
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Cap
+  <Category>k__BackingField: {fileID: 11400000, guid: 69aaba0a5ee640d4b88110032533f828, type: 2}
+  <Label>k__BackingField: Cap
+  <Description>k__BackingField: 
+  <Image>k__BackingField: {fileID: 21300000, guid: 8095d696fa156b44fb287decd1ce1f23, type: 3}
+  <Price>k__BackingField: 5
+  <Weight>k__BackingField: 0.1
+  _localScale: 1
+  _stackSize: 1
+  _maxStackSize: 64
+  <Protection>k__BackingField: 3
