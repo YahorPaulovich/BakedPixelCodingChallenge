@@ -6,13 +6,14 @@ using Zenject;
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [HideInInspector] public Transform ParentAfterDrag;
+
     [Inject] private readonly InputService _input;
     private Image _image;
     private RectTransform _root;
 
     private void Awake()
     {
-        _image = GetComponent<Image>();
+        _image = GetComponentInChildren<Image>();
     }
 
     public void SetRoot(RectTransform rect)
@@ -22,13 +23,20 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        var currentSlot = transform.parent.GetComponent<InventorySlot>();
+        if (currentSlot != null && currentSlot.IsLocked)
+        {
+            Debug.LogWarning("Cannot drag item from a locked slot.");
+            return;
+        }
+
         SetMaskableAndActive(false);
 
         ParentAfterDrag = transform.parent;
         transform.SetParent(_root);
         transform.SetAsLastSibling();
     }
-    
+
     public void OnDrag(PointerEventData eventData)
     {
         transform.position = _input.Point;

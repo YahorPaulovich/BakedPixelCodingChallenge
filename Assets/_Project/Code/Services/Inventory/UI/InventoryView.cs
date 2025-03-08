@@ -1,22 +1,29 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Zenject;
 
 public sealed class InventoryView : MonoBehaviour
 {
-    [SerializeField]
-    private Transform _content;
+    [SerializeField] private Transform _content;
+    [SerializeField] private int _totalSlots = 30;
+    [SerializeField] private int _unlockedSlots = 15;
+
+    private readonly List<InventorySlot> _slots = new List<InventorySlot>();
     private readonly List<InventoryItemView> _itemViews = new List<InventoryItemView>();
-    [Inject] private InventoryItemView.Factory _itemFactory = default;
+
+    [Inject] private InventorySlot.Factory _slotFactory;
+    [Inject] private InventoryItemView.Factory _itemFactory;
     [Inject] private IInventoryStorageService _inventoryStorage;
 
-    [SerializeField] private int _totalSlots = 30;
+    private void Start()
+    {
+        CreateSlots();
+        Refresh();
+    }
 
     private void OnEnable()
     {
         _inventoryStorage.OnChanged += Refresh;
-        Refresh();
     }
 
     private void OnDisable()
@@ -28,34 +35,8 @@ public sealed class InventoryView : MonoBehaviour
     private void Refresh()
     {
         DestroyItems();
-        FillItems();
+        FillSlots();
         ResetScrollPosition(-200f);
-    }
-
-    private void FillItems()
-    {
-        int filledSlots = 0;
-
-        foreach (var item in _inventoryStorage.Items)
-        {
-            if (filledSlots >= _totalSlots)
-            {
-                break;
-            }
-
-            InventoryItemView itemView = _itemFactory.Create(item.Item, item.Count);
-            itemView.GetComponentInChildren<DraggableItem>().SetRoot(_inventoryStorage.Root);
-            itemView.transform.SetParent(_content, false);
-            _itemViews.Add(itemView);
-            filledSlots++;
-        }
-
-        // for (int i = filledSlots; i < _totalSlots; i++)
-        // {
-        //     InventoryItemView emptySlot = _itemFactory.Create(null, 0);
-        //     emptySlot.transform.SetParent(_content, false);
-        //     _itemViews.Add(emptySlot);
-        // }
     }
 
     private void ResetScrollPosition(float y)
@@ -65,12 +46,82 @@ public sealed class InventoryView : MonoBehaviour
         _content.transform.position = position;
     }
 
+    private void CreateSlots()
+    {
+        for (int i = 0; i < _totalSlots; i++)
+        {
+            var slot = _slotFactory.Create();
+            slot.transform.SetParent(_content, false);
+
+            if (i >= _unlockedSlots)
+            {
+                slot.Lock();
+            }
+
+            _slots.Add(slot);
+        }
+    }
+
+    private void FillSlots()
+    {
+        int slotIndex = 0;
+
+        foreach (var item in _inventoryStorage.Items)
+        {
+            if (slotIndex >= _unlockedSlots)
+            {
+                Debug.LogWarning("Not enough unlocked slots to display all items.");
+                break;
+            }
+
+            var itemView = _itemFactory.Create(item.Item, item.Count);
+            itemView.transform.SetParent(_slots[slotIndex].transform, false);
+            itemView.GetComponentInChildren<DraggableItem>().SetRoot(_inventoryStorage.Root);
+            _itemViews.Add(itemView);
+
+            slotIndex++;
+        }
+    }
+
     private void DestroyItems()
     {
         foreach (var itemView in _itemViews)
         {
-            itemView.Dispose();
+            if (itemView != null)
+            {
+                itemView.Dispose();
+            }
         }
         _itemViews.Clear();
+    }
+
+    public void UnlockSlots(int numberOfSlots)
+    {
+        _unlockedSlots += numberOfSlots;
+
+        for (int i = 0; i < _unlockedSlots && i < _slots.Count; i++)
+        {
+            _slots[i].Unlock();
+        }
+
+        Refresh();
+    }
+
+    public void UnlockSlotByIndex(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= _slots.Count)
+        {
+            Debug.LogError($"Invalid slot index: {slotIndex}");
+            return;
+        }
+
+        _slots[slotIndex].Unlock();
+
+        if (slotIndex >= _unlockedSlots)
+        {
+            _unlockedSlots = slotIndex + 1;
+        }
+
+        Refresh();
     }
 }

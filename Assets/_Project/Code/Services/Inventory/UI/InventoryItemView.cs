@@ -1,9 +1,9 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 using Zenject;
+using System;
+using UnityEngine.UI;
 
 public sealed class InventoryItemView : MonoBehaviour
     , IPoolable<InventoryItem, int, IMemoryPool>, IDisposable
@@ -15,42 +15,41 @@ public sealed class InventoryItemView : MonoBehaviour
 
     private IMemoryPool _pool;
 
-    [SerializeField]
-    private Image _iconImage;
+    [SerializeField] private Image _iconImage;
+    [SerializeField] private TextMeshProUGUI _stackSizeText;
 
-    [SerializeField]
-    private TextMeshProUGUI _stackSizeText;
-
-    [SerializeField]
-    private GameObject _locker;
-
-public void OnSpawned(InventoryItem item, int count, IMemoryPool pool)
-{
-    _pool = pool;
-
-    if (item != null)
+    public void OnSpawned(InventoryItem item, int count, IMemoryPool pool)
     {
-        _iconImage.sprite = item.Image;
-        _iconImage.rectTransform.localScale = item.LocalScale;
-    }
-    if (_iconImage.sprite == null)
-    {
-        Destroy(_iconImage.gameObject);
+        _pool = pool;
+
+        if (item != null)
+        {
+            _iconImage.sprite = item.Image;
+            _iconImage.rectTransform.localScale = item.LocalScale;
+        }
+        if (_iconImage.sprite == null)
+        {
+            Debug.LogWarning($"Item {item.Name} has no image.");
+            Destroy(_iconImage.gameObject);
+        }
+
+        UpdateCount(count);
     }
 
-    if (count > 1)
+    public void UpdateCount(int count)
     {
-        _stackSizeText.text = count.ToString();
+        if (count > 1)
+        {
+            _stackSizeText.text = count.ToString();
+        }
+        else
+        {
+            _stackSizeText.text = string.Empty;
+        }
     }
-    else
-    {
-        _stackSizeText.text = string.Empty;
-    }
-}
 
     public void OnDespawned()
     {
-        
     }
 
     public void Dispose()
@@ -62,16 +61,6 @@ public void OnSpawned(InventoryItem item, int count, IMemoryPool pool)
         }
 
         OnClicked = null;
-    }
-
-    public void Lock()
-    {
-        _locker.gameObject.SetActive(true);
-    }
-
-    public void Unlock()
-    {
-        _locker.gameObject.SetActive(false);
     }
 
     public void OnPointerClick(PointerEventData eventData)

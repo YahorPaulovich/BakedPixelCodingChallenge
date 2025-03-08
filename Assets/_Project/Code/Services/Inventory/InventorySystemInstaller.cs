@@ -3,9 +3,15 @@ using Zenject;
 
 public sealed class InventorySystemInstaller : MonoInstaller
 {
-    [Header("InventoryItem")]
+    [Header("Inventory Item")]
     [SerializeField] private int _inventoryItemViewPoolSize = 64;
     [SerializeField] private InventoryItemView _inventoryItemViewPrefab;
+
+    [Header("Inventory Slot")]
+    [SerializeField] private int _inventorySlotPoolSize = 64;
+    [SerializeField] private InventorySlot _inventorySlotPrefab;
+
+    [Header("Transform")]
     [SerializeField] private InventoryContent _content;
     [SerializeField] private RectTransform _root;
 
@@ -13,6 +19,7 @@ public sealed class InventorySystemInstaller : MonoInstaller
     {
         BindInventoryStorageService();
         BindInventoryItemViewFactory();
+        BindInventorySlotFactory();
     }
 
     private void BindInventoryStorageService()
@@ -35,6 +42,15 @@ public sealed class InventorySystemInstaller : MonoInstaller
             .FromMonoPoolableMemoryPool(options => options
             .WithInitialSize(_inventoryItemViewPoolSize)
             .FromComponentInNewPrefab(_inventoryItemViewPrefab)
+            .UnderTransform(transform));
+    }
+
+    private void BindInventorySlotFactory()
+    {
+        Container.BindFactory<InventorySlot, InventorySlot.Factory>()
+            .FromMonoPoolableMemoryPool(options => options
+            .WithInitialSize(_inventorySlotPoolSize)
+            .FromComponentInNewPrefab(_inventorySlotPrefab)
             .UnderTransform(transform));
     }
 }
