@@ -35,7 +35,7 @@ public void OnSpawned(InventoryItem item, int count, IMemoryPool pool)
     }
     if (_iconImage.sprite == null)
     {
-        _iconImage.enabled = false;
+        Destroy(_iconImage.gameObject);
     }
 
     if (count > 1)

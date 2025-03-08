@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 public sealed class InventoryView : MonoBehaviour
@@ -43,6 +44,7 @@ public sealed class InventoryView : MonoBehaviour
             }
 
             InventoryItemView itemView = _itemFactory.Create(item.Item, item.Count);
+            itemView.GetComponentInChildren<DraggableItem>().SetRoot(_inventoryStorage.Root);
             itemView.transform.SetParent(_content, false);
             _itemViews.Add(itemView);
             filledSlots++;

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public interface IInventoryStorageService
 {
-    public void Initialize(InventoryContent productCatalog);
+    public RectTransform Root { get; }
+    public void Initialize(InventoryContent productCatalog, RectTransform root);
     public IEnumerable<InventoryStorageItem> Items { get; }
     public int CountOf(InventoryItem item);
     public void Add(InventoryItem item, int amount = 1);

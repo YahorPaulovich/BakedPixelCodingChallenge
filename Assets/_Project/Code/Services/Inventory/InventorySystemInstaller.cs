@@ -7,6 +7,7 @@ public sealed class InventorySystemInstaller : MonoInstaller
     [SerializeField] private int _inventoryItemViewPoolSize = 64;
     [SerializeField] private InventoryItemView _inventoryItemViewPrefab;
     [SerializeField] private InventoryContent _content;
+    [SerializeField] private RectTransform _root;
 
     public override void InstallBindings()
     {
@@ -25,7 +26,7 @@ public sealed class InventorySystemInstaller : MonoInstaller
 
     private InventoryStorageService Initialize(InjectContext context)
     {
-        return new InventoryStorageService(_content);
+        return new InventoryStorageService(_content, _root);
     }
 
     private void BindInventoryItemViewFactory()

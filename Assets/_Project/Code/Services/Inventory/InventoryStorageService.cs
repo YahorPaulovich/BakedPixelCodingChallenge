@@ -6,13 +6,17 @@ using UnityEngine;
 public sealed class InventoryStorageService : IInventoryStorageService
 {
     public InventoryStorageService() { }
-    public InventoryStorageService(InventoryContent productCatalog)
+    public InventoryStorageService(InventoryContent productCatalog, RectTransform root)
     {
-        Initialize(productCatalog);
+        Initialize(productCatalog, root);
     }
 
-    public void Initialize(InventoryContent productCatalog)
+    public RectTransform Root { get; private set; }
+
+    public void Initialize(InventoryContent productCatalog, RectTransform root)
     {
+        Root = root;
+
         var content = productCatalog.Content;
 
         if (content == null)
