@@ -22,7 +22,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        SetMaskable(false);
+        SetMaskableAndActive(false);
 
         ParentAfterDrag = transform.parent;
         transform.SetParent(_root);
@@ -36,12 +36,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        SetMaskable(true);
+        SetMaskableAndActive(true);
 
         transform.SetParent(ParentAfterDrag);
     }
 
-    private void SetMaskable(bool value)
+    private void SetMaskableAndActive(bool value)
     {
         _image.raycastTarget = value;
         _image.maskable = value;

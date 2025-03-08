@@ -50,12 +50,12 @@ public sealed class InventoryView : MonoBehaviour
             filledSlots++;
         }
 
-        for (int i = filledSlots; i < _totalSlots; i++)
-        {
-            InventoryItemView emptySlot = _itemFactory.Create(null, 0);
-            emptySlot.transform.SetParent(_content, false);
-            _itemViews.Add(emptySlot);
-        }
+        // for (int i = filledSlots; i < _totalSlots; i++)
+        // {
+        //     InventoryItemView emptySlot = _itemFactory.Create(null, 0);
+        //     emptySlot.transform.SetParent(_content, false);
+        //     _itemViews.Add(emptySlot);
+        // }
     }
 
     private void ResetScrollPosition(float y)
