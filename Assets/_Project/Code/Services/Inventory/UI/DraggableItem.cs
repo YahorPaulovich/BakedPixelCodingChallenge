@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
+using R3;
 
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -47,6 +49,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         SetMaskableAndActive(true);
 
         transform.SetParent(ParentAfterDrag);
+        OnItemMoved?.Invoke(ParentAfterDrag.GetSiblingIndex());
     }
 
     private void SetMaskableAndActive(bool value)
@@ -56,5 +59,15 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         _image.enabled = false;
         _image.enabled = true;
+    }
+
+    public event Action<int> OnItemMoved;
+
+    public Observable<int> OnItemMovedAsObservable()
+    {
+        return Observable.FromEvent<int>(
+            handler => OnItemMoved += handler,
+            handler => OnItemMoved -= handler
+        );
     }
 }

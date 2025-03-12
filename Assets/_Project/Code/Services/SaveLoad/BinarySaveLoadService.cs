@@ -7,34 +7,33 @@ using Zenject;
 
 public sealed class BinarySaveLoadService : AbstractSaveLoadService
 {
-    [Inject] private readonly IPersistentProgressService _progressService;
+    [Inject] private readonly IPersistentProgressService _persistentProgress;
 
     protected override T ReadEncryptedData<T>(string path)
     {
-        using FileStream fileStream = new FileStream(path, FileMode.Open);
-        byte[] fileBytes = new byte[fileStream.Length];
-        fileStream.Read(fileBytes, 0, fileBytes.Length);
+        try
+        {
+            byte[] fileBytes = File.ReadAllBytes(path);
 
-        using Aes aesProvider = Aes.Create();
-        aesProvider.Key = Convert.FromBase64String(KEY);
-        aesProvider.IV = Convert.FromBase64String(IV);
+            using Aes aesProvider = Aes.Create();
+            aesProvider.Key = Convert.FromBase64String(KEY);
+            aesProvider.IV = Convert.FromBase64String(IV);
 
-        using ICryptoTransform cryptoTransform = aesProvider.CreateDecryptor(
-            aesProvider.Key,
-            aesProvider.IV
-        );
+            using ICryptoTransform cryptoTransform = aesProvider.CreateDecryptor();
+            using MemoryStream memoryStream = new MemoryStream(fileBytes);
+            using CryptoStream cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read);
 
-        using MemoryStream decryptionStream = new MemoryStream(fileBytes);
-        using CryptoStream cryptoStream = new CryptoStream(
-            decryptionStream,
-            cryptoTransform,
-            CryptoStreamMode.Read
-        );
+            using MemoryStream decryptedStream = new MemoryStream();
+            cryptoStream.CopyTo(decryptedStream);
+            decryptedStream.Position = 0;
 
-        byte[] decryptedData = new byte[fileBytes.Length];
-        int decryptedByteCount = cryptoStream.Read(decryptedData, 0, decryptedData.Length);
-
-        return MemoryPackSerializer.Deserialize<T>(decryptedData.AsSpan(0, decryptedByteCount));
+            return MemoryPackSerializer.Deserialize<T>(decryptedStream.ToArray());
+        }
+        catch (CryptographicException ex)
+        {
+            Debug.LogError($"Decryption failed: {ex.Message}");
+            return default;
+        }
     }
 
     protected override void WriteEncryptedData<T>(T data, FileStream stream)
@@ -80,21 +79,23 @@ public sealed class BinarySaveLoadService : AbstractSaveLoadService
 
     public override bool TryLoad<T>(out T data, bool encrypted = false)
     {
+        data = default;
+
         if (!File.Exists(FilePath))
         {
-            Debug.LogError($"Cannot load file at {FilePath}. File does not exist!");
-            throw new FileNotFoundException($"{FilePath} does not exist!");
+            Debug.LogWarning($"Cannot load file at {FilePath}. File does not exist!");
+            return false;
         }
 
         try
         {
-            using FileStream fileStream = new FileStream(FilePath, FileMode.Open);
             if (encrypted)
             {
                 data = ReadEncryptedData<T>(FilePath);
             }
             else
             {
+                using FileStream fileStream = new FileStream(FilePath, FileMode.Open);
                 byte[] fileBytes = new byte[fileStream.Length];
                 fileStream.Read(fileBytes, 0, fileBytes.Length);
                 data = MemoryPackSerializer.Deserialize<T>(fileBytes);
@@ -105,18 +106,28 @@ public sealed class BinarySaveLoadService : AbstractSaveLoadService
         catch (Exception e)
         {
             Debug.LogError($"Failed to load data due to: {e.Message} {e.StackTrace}");
-            throw e;
+            return false;
         }
     }
 
     public override void SaveProgress()
     {
-        TrySave(_progressService.Progress, false);
+        TrySave(_persistentProgress.Progress, true);
     }
 
     public override PlayerProgress LoadProgress()
     {
-        TryLoad(out PlayerProgress playerProgress, false);
+        PlayerProgress playerProgress = null;
+
+        if (TryLoad(out playerProgress, true))
+        {
+            Debug.Log("Progress loaded successfully.");
+        }
+        else
+        {
+            Debug.LogWarning("Failed to load progress. Initializing new progress.");
+        }
+
         return playerProgress;
     }
 }

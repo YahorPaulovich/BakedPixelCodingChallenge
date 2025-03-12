@@ -1,4 +1,5 @@
 using System.Linq;
+using BurstLinq;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -52,7 +53,7 @@ public class InventoryPlayerActionsView : MonoBehaviour
 
     private void OnShootButtonClicked()
     {
-        var ammoItems = _inventoryStorage.Items
+        var ammoItems = _inventoryStorage.Content
             .Where(item => item.Item.Category.Name == "Consumables")
             .ToList();
 
@@ -76,7 +77,7 @@ public class InventoryPlayerActionsView : MonoBehaviour
 
     private void OnAddAmmoButtonClicked()
     {
-        var ammoTypes = _inventoryStorage.Items
+        var ammoTypes = _inventoryStorage.Content
             .Select(item => item.Item)
             .Where(item => item.Category.Name == "Consumables")
             .Distinct()
@@ -111,7 +112,7 @@ public class InventoryPlayerActionsView : MonoBehaviour
 
     private InventoryItem GetRandomItemByCategory(string categoryName)
     {
-        var items = _inventoryStorage.Items
+        var items = _inventoryStorage.Content
             .Select(item => item.Item)
             .Where(item => item.Category.Name == categoryName)
             .ToList();
@@ -121,7 +122,7 @@ public class InventoryPlayerActionsView : MonoBehaviour
             Debug.LogError($"No items found for category: {categoryName}");
             return null;
         }
-        
+
         return items[_random.NextInt(0, items.Count)];
     }
 

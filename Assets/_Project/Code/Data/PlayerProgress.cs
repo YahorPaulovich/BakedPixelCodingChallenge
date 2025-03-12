@@ -9,4 +9,9 @@ public partial class PlayerProgress
     {
         InventoryData = new InventoryData();
     }
+
+    public override string ToString()
+    {
+        return $"PlayerProgress: {InventoryData}";
+    }
 }

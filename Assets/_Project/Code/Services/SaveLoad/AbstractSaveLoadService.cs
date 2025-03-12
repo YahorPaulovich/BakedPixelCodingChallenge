@@ -5,10 +5,10 @@ public abstract class AbstractSaveLoadService : ISaveLoadService
 {
     private string _directory;
     private string _filePath;
-    
+
     protected const string KEY = "ggdPhkeOoiv6YMiPWa34kIuOdDUL7NwQFg6l1DVdwN8=";
     protected const string IV = "JZuM0HQsWSBVpRHTeRZMYQ==";
-    
+
     public string FilePath => _filePath;
 
     public AbstractSaveLoadService()
@@ -23,7 +23,7 @@ public abstract class AbstractSaveLoadService : ISaveLoadService
     {
         _filePath = _directory + fileName;
     }
-    
+
     protected abstract T ReadEncryptedData<T>(string path);
     protected abstract void WriteEncryptedData<T>(T data, FileStream stream);
     public abstract bool TrySave<T>(T data, bool encrypted = false);
@@ -31,7 +31,7 @@ public abstract class AbstractSaveLoadService : ISaveLoadService
     public abstract void SaveProgress();
     public abstract PlayerProgress LoadProgress();
 
-    public virtual void Delete() 
+    public virtual void Delete()
     {
         if (File.Exists(_filePath))
         {

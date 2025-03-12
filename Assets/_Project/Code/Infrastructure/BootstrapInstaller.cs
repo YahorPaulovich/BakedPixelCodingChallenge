@@ -2,7 +2,6 @@ using Zenject;
 
 public sealed class BootstrapInstaller : MonoInstaller
 {
-    private PersistentProgressService _persistentProgress;
     public override void InstallBindings()
     {
         BindInputService();
@@ -19,12 +18,9 @@ public sealed class BootstrapInstaller : MonoInstaller
     
     private void BindPersistentDataService()
     {
-        _persistentProgress = new PersistentProgressService();
-
         Container
             .Bind<IPersistentProgressService>()
             .To<PersistentProgressService>()
-            .FromInstance(_persistentProgress)
             .AsSingle();
     }
     

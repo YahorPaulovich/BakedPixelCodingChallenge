@@ -1050,8 +1050,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _content: {fileID: 2106291876}
-  _totalSlots: 30
-  _unlockedSlots: 15
 --- !u!114 &803183866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1144,6 +1142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc449c659b26e254798c44661b42874b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _inventoryView: {fileID: 803183865}
   _shootButton: {fileID: 254699765}
   _addAmmoButton: {fileID: 137647865}
   _addItemButton: {fileID: 375021266}
@@ -1987,6 +1986,8 @@ MonoBehaviour:
   _inventorySlotPrefab: {fileID: 446603153445632383, guid: 7e05da15fcc96594cb4f2b75a5014d88, type: 3}
   _content: {fileID: 11400000, guid: 6ac870e99664b614bb951cb87fafa849, type: 2}
   _root: {fileID: 558179207}
+  _totalSlots: 30
+  _unlockedSlots: 15
 --- !u!4 &1836207888
 Transform:
   m_ObjectHideFlags: 0

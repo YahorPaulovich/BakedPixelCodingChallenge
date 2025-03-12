@@ -11,4 +11,14 @@ public struct InventoryStorageItem
         Item = item;
         Count = count;
     }
+
+    public override string ToString()
+    {
+        if (Item == null)
+        {
+            return $"InventoryStorageItem: [Item is null, Count = {Count}]";
+        }
+
+        return $"InventoryStorageItem: [Item: {Item}, Count: {Count}]";
+    }
 }

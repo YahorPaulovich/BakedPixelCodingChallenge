@@ -12,19 +12,41 @@ public sealed class InventoryStorageService : IInventoryStorageService
     }
 
     public RectTransform Root { get; private set; }
+    public InitialInventoryItem[] Content { get; private set; }
+    private int _totalSlots = 30;
+    private int _unlockedSlots = 15;
+
+    public int TotalSlots
+    {
+        get => _totalSlots;
+        set
+        {
+            _totalSlots = math.max(value, 1);
+            if (_unlockedSlots > _totalSlots)
+            {
+                UnlockedSlots = _totalSlots;
+            }
+        }
+    }
+
+    public int UnlockedSlots
+    {
+        get => _unlockedSlots;
+        set => _unlockedSlots = math.clamp(value, 0, TotalSlots);
+    }
 
     public void Initialize(InventoryContent productCatalog, RectTransform root)
     {
         Root = root;
 
-        var content = productCatalog.Content;
+        Content = productCatalog.Content;
 
-        if (content == null)
+        if (Content == null)
         {
             return;
         }
 
-        foreach (var item in content)
+        foreach (var item in Content)
         {
             if (item.Count <= 0)
             {
@@ -36,7 +58,7 @@ public sealed class InventoryStorageService : IInventoryStorageService
             }
         }
     }
-    
+
     private sealed class Comparer : IComparer<InventoryItem>
     {
         public static readonly Comparer Instance = new Comparer();
@@ -82,59 +104,72 @@ public sealed class InventoryStorageService : IInventoryStorageService
         }
     }
 
+    public bool ContainsItem(InventoryItem item)
+    {
+        return _items.ContainsKey(item);
+    }
+
+    public void UpdateItemCount(InventoryItem item, int value = 1)
+    {
+        if (value >= 1)
+        {
+            _items[item] = value;
+        }
+    }
+
     public int CountOf(InventoryItem item)
     {
         _items.TryGetValue(item, out int count);
         return count;
     }
 
-public void Add(InventoryItem item, int amount)
-{
-    if (amount <= 0)
+    public void Add(InventoryItem item, int amount)
     {
-        Debug.LogError($"Attempted to add {amount} of '{item.Name}' into the inventory.");
-        return;
-    }
-
-    if (item.MaxStackSize > 1)
-    {
-        if (_items.TryGetValue(item, out int count))
+        if (amount <= 0)
         {
-            int spaceLeft = item.MaxStackSize - count;
-            int amountToAdd = math.min(amount, spaceLeft);
+            Debug.LogError($"Attempted to add {amount} of '{item.Name}' into the inventory.");
+            return;
+        }
 
-            if (amountToAdd > 0)
+        if (item.MaxStackSize > 1)
+        {
+            if (_items.TryGetValue(item, out int count))
             {
-                _items[item] = count + amountToAdd;
-                amount -= amountToAdd;
+                int spaceLeft = item.MaxStackSize - count;
+                int amountToAdd = math.min(amount, spaceLeft);
+
+                if (amountToAdd > 0)
+                {
+                    _items[item] = count + amountToAdd;
+                    amount -= amountToAdd;
+                }
+
+                if (amount > 0)
+                {
+                    _items[item] = amount;
+                }
             }
-
-            if (amount > 0)
+            else
             {
-                _items[item] = amount;
+                _items[item] = math.min(amount, item.MaxStackSize);
+                amount -= _items[item];
+
+                if (amount > 0)
+                {
+                    _items[item] = amount;
+                }
             }
         }
         else
         {
-            _items[item] = math.min(amount, item.MaxStackSize);
-            amount -= _items[item];
-
-            if (amount > 0)
+            for (int i = 0; i < amount; i++)
             {
-                _items[item] = amount;
+                _items[item] = 1;
             }
         }
-    }
-    else
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            _items[item] = 1;
-        }
-    }
 
-    OnChanged?.Invoke();
-}
+        OnChanged?.Invoke();
+    }
 
     public bool Remove(InventoryItem item, int amount)
     {

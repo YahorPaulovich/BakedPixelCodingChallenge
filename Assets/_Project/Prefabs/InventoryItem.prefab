@@ -271,9 +271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f4a277a430b484981e0b14647e91a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <DraggableItem>k__BackingField: {fileID: 8565954599620912772}
   _iconImage: {fileID: 5622781767674841359}
   _stackSizeText: {fileID: 3885028977047025384}
-  _locker: {fileID: 0}
 --- !u!114 &8565954599620912772
 MonoBehaviour:
   m_ObjectHideFlags: 0

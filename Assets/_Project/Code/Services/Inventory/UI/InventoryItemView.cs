@@ -12,9 +12,10 @@ public sealed class InventoryItemView : MonoBehaviour
     public class Factory : PlaceholderFactory<InventoryItem, int, InventoryItemView>
     {
     }
-
+    
     private IMemoryPool _pool;
 
+    [field: SerializeField] public DraggableItem DraggableItem { get; private set; }
     [SerializeField] private Image _iconImage;
     [SerializeField] private TextMeshProUGUI _stackSizeText;
 

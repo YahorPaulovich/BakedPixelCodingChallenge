@@ -15,6 +15,12 @@ public sealed class InventorySystemInstaller : MonoInstaller
     [SerializeField] private InventoryContent _content;
     [SerializeField] private RectTransform _root;
 
+    [Header("Capacity")]
+    [SerializeField] private int _totalSlots = 30;
+    [SerializeField] private int _unlockedSlots = 15;
+
+    private InventoryStorageService _inventoryStorage = null;
+
     public override void InstallBindings()
     {
         BindInventoryStorageService();
@@ -33,7 +39,11 @@ public sealed class InventorySystemInstaller : MonoInstaller
 
     private InventoryStorageService Initialize(InjectContext context)
     {
-        return new InventoryStorageService(_content, _root);
+        _inventoryStorage = new InventoryStorageService(_content, _root);
+        _inventoryStorage.TotalSlots = _totalSlots;
+        _inventoryStorage.UnlockedSlots = _unlockedSlots;
+
+        return _inventoryStorage;
     }
 
     private void BindInventoryItemViewFactory()

@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "InventoryItem", menuName = "Configs/Inventory/InventoryItem", order = 0)]
 public class InventoryItem : ScriptableObject
 {
+    private string _itemID = Guid.NewGuid().ToString();
+    public string ItemID => _itemID;
     [field: SerializeField] public string Name { get; private set; }
     [field: SerializeField] public InventoryCategory Category { get; private set; }
     [field: SerializeField] public string Label { get; private set; }
@@ -48,12 +50,23 @@ public class InventoryItem : ScriptableObject
 
     private void OnValidate()
     {
+        if(string.IsNullOrEmpty(_itemID))
+        {
+            _itemID = Guid.NewGuid().ToString();
+        }
+
         MaxStackSize = _maxStackSize;
         StackSize = _stackSize;
     }
 
     public bool LessThan(InventoryItem other)
     {
-        return Name.CompareTo(other.Name) < 0;
+        return string.Compare(ItemID, other.ItemID) < 0;
+    }
+    
+    public override string ToString()
+    {
+        return $"InventoryItem: [Name: {Name}, Category: {Category?.Name ?? "null"}, Label: {Label}, Description: {Description}, " +
+               $"Price: {Price}, Weight: {Weight}, LocalScale: {LocalScale}, StackSize: {StackSize}, MaxStackSize: {MaxStackSize}]";
     }
 }
