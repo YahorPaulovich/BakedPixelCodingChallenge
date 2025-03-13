@@ -103,9 +103,15 @@ public class InventoryPlayerActionsView : MonoBehaviour
         var headItem = GetRandomItemByCategory("Head");
         var torsoItem = GetRandomItemByCategory("Torso");
 
-        if (weaponItem != null) _inventoryStorage.Add(weaponItem, 1);
-        if (headItem != null) _inventoryStorage.Add(headItem, 1);
-        if (torsoItem != null) _inventoryStorage.Add(torsoItem, 1);
+        InventoryItem[] items = { weaponItem, headItem, torsoItem };
+        
+        foreach (var item in items)
+        {
+            if (item != null)
+            {
+                _inventoryStorage.Add(item, 1);
+            }
+        }
 
         Debug.Log("Added random items of each type.");
     }
