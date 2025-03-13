@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,9 +14,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Image _image;
     private RectTransform _root;
 
+    private InventoryItemDropEffect _itemDropEffect;
+
     private void Awake()
     {
         _image = GetComponentInChildren<Image>();
+        _itemDropEffect = GetComponent<InventoryItemDropEffect>();
     }
 
     public void SetRoot(RectTransform rect)
@@ -37,6 +41,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         ParentAfterDrag = transform.parent;
         transform.SetParent(_root);
         transform.SetAsLastSibling();
+
+        AnimateDropEffect();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -46,12 +52,14 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        AnimateDropEffect();
         SetMaskableAndActive(true);
 
         transform.SetParent(ParentAfterDrag);
         OnItemMoved?.Invoke(ParentAfterDrag.GetSiblingIndex());
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetMaskableAndActive(bool value)
     {
         _image.raycastTarget = value;
@@ -59,6 +67,16 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         _image.enabled = false;
         _image.enabled = true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void AnimateDropEffect()
+    {
+        _itemDropEffect.CancelAllAnimations();
+        _itemDropEffect.ResetAnimations();
+
+        _itemDropEffect.AnimateScaleIn();
+        _itemDropEffect.AnimateFadeIn();
     }
 
     public event Action<int> OnItemMoved;

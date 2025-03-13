@@ -13,7 +13,7 @@ public sealed class InventoryView : MonoBehaviour
 
     private readonly List<InventorySlot> _slots = new List<InventorySlot>();
     private readonly List<InventoryItemView> _itemViews = new List<InventoryItemView>();
-
+    private List<InventoryStorageItem> _previousItems = new List<InventoryStorageItem>();
     [Inject] private InventorySlot.Factory _slotFactory;
     [Inject] private InventoryItemView.Factory _itemFactory;
     [Inject] private IInventoryStorageService _inventoryStorage;
@@ -43,18 +43,26 @@ public sealed class InventoryView : MonoBehaviour
     private void OnDisable()
     {
         _inventoryStorage.OnChanged -= Refresh;
-        DestroyItems();
 
+        SaveProgress();
+        DestroyItems();
+    }
+
+    private void OnDestroy()
+    {
         SaveProgress();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Refresh()
     {
-        DestroyItems();
-        FillSlots();
+        var currentItems = _inventoryStorage.Items.ToList();
+
+        DestroyItems(currentItems);
+        FillSlots(currentItems);
         ResetScrollPosition(-200f);
 
+        _previousItems = currentItems;
         SaveProgress();
     }
 
@@ -84,11 +92,12 @@ public sealed class InventoryView : MonoBehaviour
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void FillSlots()
+    private void FillSlots(List<InventoryStorageItem> currentItems)
     {
         int slotIndex = 0;
+        var addedItems = currentItems.Except(_previousItems).ToList();
 
-        foreach (var item in _inventoryStorage.Items)
+        foreach (var item in currentItems)
         {
             if (slotIndex >= _inventoryStorage.UnlockedSlots)
             {
@@ -96,9 +105,16 @@ public sealed class InventoryView : MonoBehaviour
                 break;
             }
 
+            bool isNewItem = addedItems.Contains(item);
+
             var itemView = _itemFactory.Create(item.Item, item.Count);
             var draggableItem = itemView.DraggableItem;
             draggableItem.SetRoot(_inventoryStorage.Root);
+
+            if (isNewItem)
+            {
+                draggableItem.AnimateDropEffect();
+            }
 
             draggableItem.OnItemMovedAsObservable()
                 .Subscribe(newIndex => OnItemMoved(item, newIndex))
@@ -136,6 +152,7 @@ public sealed class InventoryView : MonoBehaviour
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int FindFreeSlotIndex(int startIndex = 0)
     {
         int maxIndex = math.min(_inventoryStorage.UnlockedSlots, _slots.Count) - 1;
@@ -160,6 +177,7 @@ public sealed class InventoryView : MonoBehaviour
         return -1;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsSlotFree(InventorySlot slot)
     {
         return !slot.IsLocked && slot.transform.childCount <= 1;
@@ -175,17 +193,14 @@ public sealed class InventoryView : MonoBehaviour
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void DestroyItems()
+    private void DestroyItems(List<InventoryStorageItem> currentItems = null)
     {
-        foreach (var itemView in _itemViews)
-        {
-            if (itemView != null)
-            {
-                itemView.Dispose();
-            }
-        }
+        _itemViews.ToList().ForEach(itemView => itemView.Dispose());
+
         _itemViews.Clear();
         _disposables.Clear();
+
+        SaveProgress();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

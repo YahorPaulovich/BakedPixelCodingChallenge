@@ -223,6 +223,8 @@ GameObject:
   - component: {fileID: 5805712725576823601}
   - component: {fileID: 8130072446678407634}
   - component: {fileID: 8565954599620912772}
+  - component: {fileID: 4822862084831696653}
+  - component: {fileID: 9063451057473807540}
   m_Layer: 5
   m_Name: InventoryItem
   m_TagString: Untagged
@@ -271,7 +273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f4a277a430b484981e0b14647e91a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <DraggableItem>k__BackingField: {fileID: 8565954599620912772}
   _iconImage: {fileID: 5622781767674841359}
   _stackSizeText: {fileID: 3885028977047025384}
 --- !u!114 &8565954599620912772
@@ -287,3 +288,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParentAfterDrag: {fileID: 0}
+--- !u!114 &4822862084831696653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9167209510634893325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f40e5fddf893804eb2adb66f5403c9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScaleInDuration: 0.2
+  ScaleOutDuration: 0.3
+  FadeInDuration: 0.1
+  FadeOutDuration: 0.1
+--- !u!225 &9063451057473807540
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9167209510634893325}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

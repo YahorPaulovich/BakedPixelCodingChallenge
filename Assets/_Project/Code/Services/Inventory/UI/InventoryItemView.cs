@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using Zenject;
-using System;
-using UnityEngine.UI;
 
 public sealed class InventoryItemView : MonoBehaviour
     , IPoolable<InventoryItem, int, IMemoryPool>, IDisposable
@@ -12,12 +12,16 @@ public sealed class InventoryItemView : MonoBehaviour
     public class Factory : PlaceholderFactory<InventoryItem, int, InventoryItemView>
     {
     }
-    
-    private IMemoryPool _pool;
 
-    [field: SerializeField] public DraggableItem DraggableItem { get; private set; }
+    private IMemoryPool _pool;
+    public DraggableItem DraggableItem { get; private set; }
     [SerializeField] private Image _iconImage;
     [SerializeField] private TextMeshProUGUI _stackSizeText;
+
+    private void Awake()
+    {
+        DraggableItem = GetComponent<DraggableItem>();
+    }
 
     public void OnSpawned(InventoryItem item, int count, IMemoryPool pool)
     {
@@ -55,6 +59,9 @@ public sealed class InventoryItemView : MonoBehaviour
 
     public void Dispose()
     {
+        _iconImage.sprite = null;
+        _stackSizeText.text = string.Empty;
+                
         if (_pool != null)
         {
             _pool.Despawn(this);
